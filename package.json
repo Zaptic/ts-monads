@@ -8,7 +8,8 @@
     "repository": "https://github.com/Zaptic/ts-monads",
     "scripts": {
         "prettier": "prettier --config prettier.config.js '**' --write",
-        "test": "mocha --colors --require source-map-support/register --ui bdd $(find dist/ -name '*.test.js')"
+        "test": "mocha --colors --require source-map-support/register --ui bdd $(find dist/ -name '*.test.js')",
+        "tsc": "tsc"
     },
     "dependencies": {
         "lodash.omit": "4.5.0",
