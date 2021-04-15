@@ -135,6 +135,10 @@ export class ObjectArrayResultPromise<E, T extends {}> extends ValueArrayResultP
         return MaybeObjectResultPromise.build(this.map((rows) => Maybe.fromOptional(rows[0])))
     }
 
+    public field<K extends keyof T>(field: K): ValueArrayResultPromise<E, T[K]> {
+        return ValueArrayResultPromise.build<E, T[K]>(this.mapOk((row) => row[field]))
+    }
+
     public pick<K extends keyof T>(...fields: K[]) {
         return this.mapOk((row) => pick(row, ...fields))
     }
