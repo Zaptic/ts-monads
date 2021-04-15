@@ -110,6 +110,10 @@ export class ResultPromise<E, O> extends Promise<Result<E, O>> {
         return this.then((result) => result.orThrow(error))
     }
 
+    public caseOf<K>(patterns: ResultPattern<E, O, K>): Promise<K> {
+        return this.then((result) => result.caseOf(patterns))
+    }
+
     /**
      * Either resolve to the value of the `Ok`, or the value given
      *
@@ -172,6 +176,10 @@ class Ok<O, E = unknown> {
         return this.value
     }
 
+    public caseOf<T>({ ok }: ResultPattern<E, O, T>): T {
+        return ok(this.value)
+    }
+
     /** Either return the value of the `Ok`, or the value given */
     public withDefault(_: O): O {
         return this.value
@@ -229,6 +237,10 @@ class Err<E, O = unknown> {
      */
     public orThrow(error: Error | string = 'Attempted to extract a value out of an Err'): never {
         throw typeof error === 'string' ? new Error(error) : error
+    }
+
+    public caseOf<T>({ err }: ResultPattern<E, O, T>): T {
+        return err(this.error)
     }
 
     /** Either return the value of the `Ok`, or the value given */
