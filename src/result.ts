@@ -26,6 +26,17 @@ export namespace Result {
         if (value instanceof Promise) return ResultPromise.from(value.then((v) => Result.err<E, O>(v)))
         return ResultPromise.from(Promise.resolve(Result.err<E, O>(value)))
     }
+
+    export function all<E, O>(results: Array<Result<E, O>>): Result<E[], O[]> {
+        const values: O[] = []
+        const errors: E[] = []
+        for (const result of results) {
+            if (result.isOk()) values.push(result.value)
+            else errors.push(result.error)
+        }
+        if (errors.length > 0) return Result.err(errors)
+        else return Result.ok(values)
+    }
 }
 
 export type Result<E, O> = Err<E, O> | Ok<O, E>
