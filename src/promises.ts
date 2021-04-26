@@ -5,6 +5,24 @@ import omit from 'lodash.omit'
 import { ResultPromise } from './result'
 
 /**
+ * Returns type A if T is a plain object or B if not
+ * it's a bit naive but should help
+ */
+type IfPlainObject<T, A, B> = T extends string
+    ? B
+    : T extends number
+    ? B
+    : T extends boolean
+    ? B
+    : T extends undefined
+    ? B
+    : T extends Function
+    ? B
+    : T extends Array<any>
+    ? B
+    : A
+
+/**
  * Represents a promise for an array of values - values as opposed to objects
  */
 export class ValueArrayPromise<T> extends Promise<T[]> {
@@ -20,12 +38,12 @@ export class ValueArrayPromise<T> extends Promise<T[]> {
         return MaybePromise.from(this.then((values) => Maybe.fromOptional(values[0])))
     }
 
-    public filter(fn: (row: T) => boolean) {
-        return ValueArrayPromise.build(this.then((values) => values.filter(fn)))
+    public filter(fn: (row: T) => boolean): IfPlainObject<T, ObjectArrayPromise<T>, ValueArrayPromise<T>> {
+        return ObjectArrayPromise.build(this.then((values) => values.filter(fn)))
     }
 
-    public map<K>(fn: (row: T) => K) {
-        return ValueArrayPromise.build(this.then((values) => values.map(fn)))
+    public map<K>(fn: (row: T) => K): IfPlainObject<K, ObjectArrayPromise<K>, ValueArrayPromise<K>> {
+        return ObjectArrayPromise.build(this.then((values) => values.map(fn)))
     }
 }
 
@@ -49,8 +67,10 @@ export class ValueArrayResultPromise<E, T> extends ResultPromise<E, T[]> {
         return this.map((values) => values.filter(fn))
     }
 
-    public mapOk<K>(fn: (row: T) => K) {
-        return this.map((values) => values.map(fn))
+    public mapOk<K>(
+        fn: (row: T) => K
+    ): IfPlainObject<K, ObjectArrayResultPromise<E, K>, ValueArrayResultPromise<E, K>> {
+        return ObjectArrayResultPromise.build(this.map((values) => values.map(fn)))
     }
 }
 
