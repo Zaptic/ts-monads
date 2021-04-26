@@ -7,22 +7,23 @@ export type ResultPattern<E, O, T> = {
 
 /** Represent operations that may fail */
 export namespace Result {
-    export function ok<O, E = unknown>(value: O): Result<E, O> {
+    // Anys here help with inference when a function returns a result.ok and a result.err at different stages
+    export function ok<O, E = any>(value: O): Result<E, O> {
         return new Ok(value)
     }
 
-    export function err<E, O = unknown>(value: E): Result<E, O> {
+    export function err<E, O = any>(value: E): Result<E, O> {
         return new Err(value)
     }
 
     /** An 'async' version of `ok`; returns an AsyncResult containing the given value */
-    export function asyncOk<O, E = unknown>(value: O | Promise<O>): ResultPromise<E, O> {
+    export function asyncOk<O, E = any>(value: O | Promise<O>): ResultPromise<E, O> {
         if (value instanceof Promise) return ResultPromise.from(value.then((v) => Result.ok<O, E>(v)))
         return ResultPromise.from(Promise.resolve(Result.ok<O, E>(value)))
     }
 
     /** An 'async' version of `err`; returns an AsyncResult containing the given value */
-    export function asyncErr<E, O = unknown>(value: E | Promise<E>): ResultPromise<E, O> {
+    export function asyncErr<E, O = any>(value: E | Promise<E>): ResultPromise<E, O> {
         if (value instanceof Promise) return ResultPromise.from(value.then((v) => Result.err<E, O>(v)))
         return ResultPromise.from(Promise.resolve(Result.err<E, O>(value)))
     }
