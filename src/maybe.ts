@@ -147,6 +147,10 @@ export class MaybePromise<T> extends Promise<Maybe<T>> {
             this.then((maybe) => resolve(fn(maybe)), reject)
         })
     }
+
+    public toUnion<O>(other: O): Promise<T | O> {
+        return this.then((maybe) => maybe.toUnion(other))
+    }
 }
 
 export class Just<T> {
@@ -217,6 +221,10 @@ export class Just<T> {
     public toResult<E>(_: E): Result<E, T> {
         return Result.ok(this.value)
     }
+
+    public toUnion<O>(_: O): T | O {
+        return this.value
+    }
 }
 
 export class Nothing<T = unknown> {
@@ -284,5 +292,9 @@ export class Nothing<T = unknown> {
      */
     public toResult<E>(error: E): Result<E, T> {
         return Result.err(error)
+    }
+
+    public toUnion<O>(other: O): T | O {
+        return other
     }
 }

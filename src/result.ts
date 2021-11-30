@@ -142,6 +142,10 @@ export class ResultPromise<E, O> extends Promise<Result<E, O>> {
             this.then((result) => resolve(fn(result)), reject)
         })
     }
+
+    public toUnion(): Promise<O | E> {
+        return this.then((result) => result.toUnion())
+    }
 }
 
 class Ok<O, E = unknown> {
@@ -199,6 +203,10 @@ class Ok<O, E = unknown> {
 
     public toString(): string {
         return `Ok(${JSON.stringify(this.value, null, 2)})`
+    }
+
+    public toUnion(): O | E {
+        return this.value
     }
 }
 
@@ -262,5 +270,9 @@ class Err<E, O = unknown> {
 
     public toString(): string {
         return `Err(${JSON.stringify(this.error, null, 2)})`
+    }
+
+    public toUnion(): O | E {
+        return this.error
     }
 }
