@@ -1,7 +1,6 @@
 import { extendedPromise } from './promiseExecutor'
 import { MaybePromise, Maybe } from './maybe'
-import pick from 'lodash.pick'
-import omit from 'lodash.omit'
+import { pick, omit } from 'lodash'
 import { ResultPromise } from './result'
 
 /**
