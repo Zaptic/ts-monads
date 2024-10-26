@@ -1,3 +1,4 @@
+import { ensureError, prefixError } from './error'
 import { PromiseExecutor, extendedPromise } from './promiseExecutor'
 
 export type ResultPattern<E, O, T> = {
@@ -118,8 +119,8 @@ export class ResultPromise<E, O> extends Promise<Result<E, O>> {
      * Either resolve to the value of the `Ok` or reject the promise if called
      * on an `Err`.
      */
-    public orThrow(error?: Error | string): Promise<O | never> {
-        return this.then((result) => result.orThrow(error))
+    public orThrow(prefix?: string): Promise<O | never> {
+        return this.then((result) => result.orThrow(prefix))
     }
 
     public caseOf<K>(patterns: ResultPattern<E, O, K>): Promise<K> {
@@ -255,8 +256,9 @@ class Err<E, O = unknown> {
      * This is here mainly for testing. Consider using an if statement with `.isOk`
      * or `.isErr` in other situations
      */
-    public orThrow(error: Error | string = 'Attempted to extract a value out of an Err'): never {
-        throw typeof error === 'string' ? new Error(error) : error
+    public orThrow(prefix?: string): never {
+        const error = prefixError(prefix, ensureError(this.error))
+        throw error
     }
 
     public caseOf<T>({ err }: ResultPattern<E, O, T>): T {
